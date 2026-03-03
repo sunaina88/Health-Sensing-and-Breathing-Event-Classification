@@ -1,75 +1,132 @@
-# Breathing Event Classification using 1D CNN
+# AI for Health – SRIP 2026
+## Sleep Breathing Irregularity Detection
 
-## Project Overview
+This project analyzes overnight sleep data (8 hours × 5 participants) to detect:
 
-This project processes sleep breathing signals to detect:
-- Normal breathing
+- Normal Breathing
 - Hypopnea
 - Obstructive Apnea
 
-The pipeline includes:
-1. Signal preprocessing using bandpass filtering (0.17–0.4 Hz)
-2. Window segmentation (30 seconds, 50% overlap)
-3. Event-based labeling using >50% overlap rule
-4. 1D CNN model training
-5. Leave-One-Participant-Out (LOPO) evaluation
+**Signals used:**
+
+- Nasal Airflow (32 Hz)
+- Thoracic Movement (32 Hz)
+- SpO₂ (4 Hz)
+- Event annotations (apnea/hypopnea)
+- Sleep stage profile
+
+The pipeline includes visualization, preprocessing, window-based labeling, 1D CNN modeling, and Leave-One-Participant-Out (LOPO) evaluation.
 
 ---
 
-## Folder Structure
+## 1️⃣ Visualization (4 Marks)
 
-Data/
-- APO1/ 
-    - [Flow - 30-05-2024.txt](Data%2FAP01%2FFlow%20-%2030-05-2024.txt)
-    - [Flow Events - 30-05-2024.txt](Data%2FAP01%2FFlow%20Events%20-%2030-05-2024.txt)
-    - [Sleep profile - 30-05-2024.txt](Data%2FAP01%2FSleep%20profile%20-%2030-05-2024.txt)
-    - [SPO2 - 30-05-2024.txt](Data%2FAP01%2FSPO2%20-%2030-05-2024.txt)
-    - [Thorac - 30-05-2024.txt](Data%2FAP01%2FThorac%20-%2030-05-2024.txt)
-- APO2 / 
-    - ....
-- APO3 / 
-    - ....
-- APO4 / 
-    - ....
-- APO5 / 
-    - ....
-
-Dataset/
-- AP01_X.npy
-- AP01_y.npy
-- APO2_X.npy
-- AP02_y.npy
-- APO3_X.npy
-- AP03_y.npy
-- APO4_X.npy
-- AP04_y.npy
-- APO5_X.npy
-- AP05_y.npy
-
-models/
-- cnn_model.py
-
-scripts/
-- create_dataset.py
-- train_model.py
-- vis.py
-
-Visualizations/
-- AP01_visualization.pdf
-- AP02_visualization.pdf
-- AP03_visualization.pdf
-- AP04_visualization.pdf
-- AP05_visualization.pdf
-
-report.pdf
-
-requirements.txt
-
----
-
-## How to Run
-
-### 1. Create Dataset
+**Script**
 
 ```bash
-python create_dataset.py -name AP01
+python scripts/vis.py -name "Data/AP01"
+```
+
+**What it does**
+
+- Loads Nasal Airflow, Thoracic Movement, and SpO₂
+- Aligns signals using timestamps
+- Plots full 8-hour recording
+- Overlays annotated breathing events
+- Saves PDF to `Visualizations/`
+
+**Output:**
+
+```
+Visualizations/AP01_visualization.pdf
+```
+
+---
+
+## 2️⃣ Dataset Creation (6 Marks)
+
+**Script**
+
+```bash
+python scripts/create_dataset.py -in_dir "Data" -out_dir "Dataset"
+```
+
+**Processing Steps**
+
+1. **Bandpass Filtering (0.17–0.4 Hz)** — Retains physiological breathing frequency (10–24 BrPM).
+2. **Window Segmentation**
+   - 30-second windows
+   - 50% overlap
+3. **Labeling Rule**
+   - 50% overlap with event → assign event label
+   - Otherwise → Normal
+
+**Output**
+
+Saved to `Dataset/` (CSV / NumPy format):
+
+- Labeled 30s breathing windows
+- Corresponding class labels
+
+---
+
+## 3️⃣ Modeling & Evaluation (5 Marks)
+
+**Script**
+
+```bash
+python scripts/train_model.py
+```
+
+**Model**
+
+- 1D Convolutional Neural Network (CNN)
+- Input: 30-second airflow windows
+- Output: 3-class classification
+
+**Evaluation Strategy**
+
+Leave-One-Participant-Out (LOPO)
+
+- Train on 4 participants
+- Test on remaining 1
+- Repeat for all 5 participants
+
+**Reported Metrics**
+
+- Accuracy
+- Precision
+- Recall
+- Confusion Matrix
+
+---
+
+## Requirements
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+**Main libraries:**
+
+- numpy
+- pandas
+- scipy
+- matplotlib
+- scikit-learn
+- torch / tensorflow
+
+---
+
+## Deliverables Included
+
+| File / Folder | Description |
+|---|---|
+| `vis.py` | Visualization script |
+| `create_dataset.py` | Preprocessing & labeling |
+| `train_model.py` | CNN training + LOPO evaluation |
+| `Visualizations/` | Generated PDFs |
+| `Dataset/` | Processed labeled windows |
+| `report.pdf` | Methodology and results |
