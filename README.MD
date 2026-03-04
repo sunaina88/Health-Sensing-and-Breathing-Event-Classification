@@ -1,132 +1,117 @@
-# AI for Health – SRIP 2026
-## Sleep Breathing Irregularity Detection
+# Health Sensing using Visualizations and 1D CNN Classification
+### AI for Health – SRIP 2026 
 
-This project analyzes overnight sleep data (8 hours × 5 participants) to detect:
-
-- Normal Breathing
-- Hypopnea
-- Obstructive Apnea
-
-**Signals used:**
-
-- Nasal Airflow (32 Hz)
-- Thoracic Movement (32 Hz)
-- SpO₂ (4 Hz)
-- Event annotations (apnea/hypopnea)
-- Sleep stage profile
-
-The pipeline includes visualization, preprocessing, window-based labeling, 1D CNN modeling, and Leave-One-Participant-Out (LOPO) evaluation.
+This prerequisite assignment analyses overnight sleep data (of 8 hours) from five participants to detect abnormal breathing events during sleep. Using physiological signals such as Nasal Airflow, Thoracic Movement, and SpO₂, the system performs signal preprocessing, window-based labelling and 1D CNN classification evaluated through Leave-One-Participant-Out (LOPO) cross-validation.
 
 ---
 
-## 1️⃣ Visualization (4 Marks)
+## Project Scope
 
-**Script**
+The objective is to:
+
+- Visualize 8-hour physiological recordings with annotated breathing events
+- Apply digital filtering to isolate the physiological breathing frequency range (0.17–0.4 Hz)
+- Segment signals into 30-second windows with 50% overlap
+- Label windows based on >50% overlap with annotated events
+- Train a 1D Convolutional Neural Network for classification
+- Evaluate using Leave-One-Participant-Out (LOPO) cross-validation
+- Report metrics such as Accuracy, Precision, Recall and Confusion Matrix
+
+---
+
+## Setup Instructions
+
+### 1. Clone the Repository
 
 ```bash
-python scripts/vis.py -name "Data/AP01"
+git clone https://github.com/sunaina88/Health-Sensing-and-Breathing-Event-Classification.git
+cd Health-Sensing-and-Breathing-Event-Classification
 ```
 
-**What it does**
-
-- Loads Nasal Airflow, Thoracic Movement, and SpO₂
-- Aligns signals using timestamps
-- Plots full 8-hour recording
-- Overlays annotated breathing events
-- Saves PDF to `Visualizations/`
-
-**Output:**
-
-```
-Visualizations/AP01_visualization.pdf
-```
-
----
-
-## 2️⃣ Dataset Creation (6 Marks)
-
-**Script**
-
-```bash
-python scripts/create_dataset.py -in_dir "Data" -out_dir "Dataset"
-```
-
-**Processing Steps**
-
-1. **Bandpass Filtering (0.17–0.4 Hz)** — Retains physiological breathing frequency (10–24 BrPM).
-2. **Window Segmentation**
-   - 30-second windows
-   - 50% overlap
-3. **Labeling Rule**
-   - 50% overlap with event → assign event label
-   - Otherwise → Normal
-
-**Output**
-
-Saved to `Dataset/` (CSV / NumPy format):
-
-- Labeled 30s breathing windows
-- Corresponding class labels
-
----
-
-## 3️⃣ Modeling & Evaluation (5 Marks)
-
-**Script**
-
-```bash
-python scripts/train_model.py
-```
-
-**Model**
-
-- 1D Convolutional Neural Network (CNN)
-- Input: 30-second airflow windows
-- Output: 3-class classification
-
-**Evaluation Strategy**
-
-Leave-One-Participant-Out (LOPO)
-
-- Train on 4 participants
-- Test on remaining 1
-- Repeat for all 5 participants
-
-**Reported Metrics**
-
-- Accuracy
-- Precision
-- Recall
-- Confusion Matrix
-
----
-
-## Requirements
-
-Install dependencies:
+### 2. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-**Main libraries:**
+---
 
-- numpy
-- pandas
-- scipy
-- matplotlib
-- scikit-learn
-- torch / tensorflow
+## How to Run
+
+### 1. Visualization
+
+Generate visualization for one participant:
+
+```bash
+python scripts/vis.py -name "Data/AP01"
+```
+
+This will:
+
+- Load Nasal Airflow, Thoracic Movement, and SpO₂
+- Align signals using timestamps
+- Overlay annotated breathing events
+- Save a PDF in the `Visualizations/` directory
+
+### 2. Dataset Creation
+
+Create labelled 30-second windows:
+
+```bash
+python scripts/create_dataset.py "Data" "Dataset"
+```
+
+This script:
+
+- Applies bandpass filtering (0.17–0.4 Hz)
+- Segments signals into overlapping windows
+- Assigns labels based on >50% event overlap
+- Saves processed dataset to the `Dataset/` directory
+
+### 3. Model Training and Evaluation
+
+Train and evaluate the 1D CNN model:
+
+```bash
+python scripts/train_model.py
+```
+
+This performs:
+
+- Leave-One-Participant-Out cross-validation
+- Training on four participants
+- Testing on the held-out participant
+- Reporting the following metrics:
+  - Accuracy
+  - Precision
+  - Recall
+  - Confusion Matrix
 
 ---
 
-## Deliverables Included
+## Methodological Highlights
+
+- Frequency-based digital filtering aligned with physiological breathing rates
+- Timestamp-based alignment of multi-rate signals (32 Hz and 4 Hz)
+- Subject-independent evaluation strategy (LOPO)
+- Window-based labelling using majority overlap rule
+
+---
+
+## Repository Contents
 
 | File / Folder | Description |
 |---|---|
-| `vis.py` | Visualization script |
-| `create_dataset.py` | Preprocessing & labeling |
-| `train_model.py` | CNN training + LOPO evaluation |
+| `scripts/vis.py` | Signal visualization and PDF generation |
+| `scripts/create_dataset.py` | Preprocessing and labeling pipeline |
+| `scripts/train_model.py` | CNN training and LOPO evaluation |
+| `models/cnn_model.py` | CNN Model definitions |
 | `Visualizations/` | Generated PDFs |
-| `Dataset/` | Processed labeled windows |
-| `report.pdf` | Methodology and results |
+| `Dataset/` | Processed datasets |
+| `report.pdf` | Detailed methodology and results |
+
+---
+
+> This repository was developed as a part of the AI for Health – SRIP 2026 prerequisite assignment. 
+
+> Note: Claude tools were minimally used while implementing the CNN model, and for correcting a few coding errors. However, I have completed the assignment with full understanding of the code.
