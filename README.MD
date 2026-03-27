@@ -113,5 +113,3 @@ This performs:
 ---
 
 > This repository was developed as a part of the AI for Health – SRIP 2026 prerequisite assignment. 
-
-> Note: Claude tools were minimally used while implementing the CNN model, and for correcting a few coding errors. However, I have completed the assignment with full understanding of the code.
